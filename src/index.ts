@@ -68,9 +68,14 @@ function ssnIsDateValid(ssnToCheckDateFor: string): boolean {
   let isSsnDateValid: boolean;
   isSsnDateValid = false;
 
+  // Replace all non-word characters with '-', e.g. "1900-01-01:1234" will result in "1900-01-01-1234"
   ssnToCheckDateFor = ssnToCheckDateFor.replace(/\W/g, '-');
+  
+  // If the SSN is in the format 19000101-1234 (or 000101-1234) this will result in an array with two entries
+  dateArr = ssnToCheckDateFor.split('-');
 
-  if (ssnToCheckDateFor.includes('-')) {
+  // Check that it is not of the format 19000101-1234 (or 000101-1234) and includes more than one '-'
+  if (dateArr.length !== 2 && ssnToCheckDateFor.includes('-')) {
     dateArr = ssnToCheckDateFor.split('-');
 
     if (dateArr.length !== 4) {
@@ -84,6 +89,9 @@ function ssnIsDateValid(ssnToCheckDateFor: string): boolean {
     }
   }
   else {
+    // Make sure that the SSN in the format 19000101-1234 (or 000101-1234) can be handled by removing the '-'
+    ssnToCheckDateFor = removeNonWordCharacters(ssnToCheckDateFor);
+    // Handle the digits for dates correctly by bringing them into a specific format that can later be parsed to check the date
     switch (ssnToCheckDateFor.length - 4) {
       case 6:
         //YY-MM-DD
